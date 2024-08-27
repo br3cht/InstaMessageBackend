@@ -1,0 +1,57 @@
+volumes:
+    db:
+
+services:
+    http:
+        container_name: instaMessage-nginx
+        image: nginx:alpine
+        restart: unless-stopped
+        ports:
+            - "80:80"
+        volumes:
+            - ./:/var/www
+            - ./.docker/nginx/:/etc/nginx/conf.d/
+        networks:
+          - instaMessage-system
+    app:
+        container_name: instaMesage-api
+        build:
+            args:
+              user: brethi
+              uid: 1001
+            context: .
+            dockerfile: Dockerfile
+        image: chat-system-api
+        restart: unless-stopped
+        working_dir: /var/www/
+        volumes:
+            - .:/var/www
+        networks:
+          - instaMessage-system
+
+    # db mysql
+    db:
+        container_name: instaMessage-db
+        image: mysql:8
+        restart: unless-stopped
+        environment:
+            MYSQL_DATABASE: chat
+            MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+        volumes:
+            - db:/var/lib/mysql
+        ports:
+          - "3306:3306"
+        networks:
+          - instaMessage-system
+
+    cache:
+        container_name: instaMessage-redis
+        image: redis:latest
+        ports:
+            - "6379:6379"
+        networks:
+            - instaMessage-system
+
+networks:
+    instaMessage-system:
+        driver: bridge
