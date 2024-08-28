@@ -29,6 +29,23 @@ services:
         networks:
           - instaMessage-system
 
+  # Supervisor de filas do Laravel (Horizon)
+    queue:
+      container_name: 'instaMessage-queue'
+      init: true
+      build:
+        args:
+          user: brethi
+          uid: 1001
+        context: .
+        dockerfile: Dockerfile
+      volumes:
+        - .:/var/www
+      restart: unless-stopped
+      command: ["/usr/local/bin/php", "artisan", "horizon"]
+      networks:
+        - instaMessage-system
+
     # db mysql
     db:
         container_name: instaMessage-db
