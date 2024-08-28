@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->text('content');
             $table->foreignId('conversation_id')->constrained();
+            $table->foreignId('sended_by_id')->constrained('users');
             $table->timestamps();
         });
     }
